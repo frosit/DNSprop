@@ -16,6 +16,7 @@ utils_load() {
   local script_files
   script_dir="$(dirname "$0")"
   script_files=(
+    "env.sh"
     "consts.sh"
     "log.sh"
     "requirements.sh"

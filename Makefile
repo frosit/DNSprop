@@ -8,7 +8,7 @@ build/combined_script.sh: src/requirements.sh src/utils.sh src/main.sh
 	cat $^ > $@
 	chmod +x $@
 
-compile: src/compiled.sh src/utils/consts.sh src/utils/log.sh src/utils/requirements.sh src/utils/utils.sh src/main.sh
+compile: src/compiled.sh src/utils/consts.sh src/utils/env.sh src/utils/log.sh src/utils/requirements.sh src/utils/utils.sh src/cli.sh src/main.sh
 	if [ -f build/DNSprop.sh ]; then rm build/DNSprop.sh; fi
 	cat $^ > build/DNSprop.sh
 	chmod +x build/DNSprop.sh

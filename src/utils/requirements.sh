@@ -7,10 +7,10 @@
 # Version: 1.0.0
 
 # Main system requirements
-__DNSPROP_REQUIREMENTS=(bash grep dig awk sed bc)
+__DNSPROP_REQUIREMENTS=("bash" "grep" "dig" "awk" "sed" "bc")
 
 # Development requirements
-__DNSPROP_REQUIREMENTS_DEV=(bats)
+__DNSPROP_REQUIREMENTS_DEV=("bats" "shellcheck")
 
 # Check for minimal bash version
 __DNSPROP_REQUIRED_BASH_VERSION=4.0
@@ -68,7 +68,7 @@ fi
 if [[ $current_os == "Darwin" ]]; then
 
   # Add GNU tools to requirements
-  __DNSPROP_REQUIREMENTS+=(brew ggrep gawk)
+  __DNSPROP_REQUIREMENTS+=("brew")
 
   # Check for installed packages with brew
   __DNSPROP_REQUIREMENTS_BREW=(gnu-sed gnu-grep awk bash coreutils) # @TODO fix brew deps
@@ -99,22 +99,41 @@ is_installed() {
 # Parameters: None
 # Returns: None
 function dnsprop::check_requirements() {
-  local requirements=()
-  requirements+=("${__DNSPROP_REQUIREMENTS[@]}")
+  local requirements
+  local missing_requirements=()
+
+  if [ "$#" -eq 0 ]; then
+    requirements=("${__DNSPROP_REQUIREMENTS[@]}")
+  else
+    requirements=("$@")
+  fi
 
   for requirement in "${requirements[@]}"; do
+
     if ! is_installed "$requirement"; then
-      echo "Requirement not found: $requirement"
+      missing_requirements+=("$requirement")
 
-      if [[ $current_os == "Linux" ]]; then
-        echo "You can install it using: sudo apt-get install $requirement"
-      fi
+      # # echo "Requirement not found: $requirement"
 
-      # Show about brew GNU tools
-      if [[ $current_os == "Darwin" ]]; then
-        echo "You can install it using: brew install $requirement"
-      fi
-      return 0
+      # if [[ $current_os == "Linux" ]]; then
+      #   echo "You can install it using: sudo apt-get install $requirement"
+      # fi
+
+      # # Show about brew GNU tools
+      # if [[ $current_os == "Darwin" ]]; then
+      #   echo "You can install it using: brew install $requirement"
+      # fi
+
     fi
   done
+
+  # if missing_requirements not empty
+  if [ ${#missing_requirements[@]} -gt 0 ]; then
+    dnsprop::log::error "Missing requirements: ${missing_requirements[*]}"
+
+    return "${__DNSPROP_NOK}"
+  else
+    return "${__DNSPROP_OK}"
+  fi
+
 }

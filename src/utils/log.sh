@@ -95,7 +95,9 @@ dnsprop::log.log() {
   output_fmt="${output_fmt//\{LEVEL\}/${__DNSPROP_LOG_LEVELS[$level]}}"
 
   # write to log
-  echo -e "${output}" >>"${log_file}"
+  if [[ ${__DNSPROP_LOG_FILE} != false ]]; then
+    echo -e "${output}" >>"${log_file}"
+  fi
 
   # write to terminal
   if [[ "${__DNSPROP_VERBOSE}" -eq 1 ]]; then

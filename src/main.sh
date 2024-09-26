@@ -8,51 +8,46 @@ DNSPROP_IS_BUILD="${DNSPROP_IS_BUILD:-false}"
 # DNSProp environment (dev, test, prod)
 DNSPROP_ENV="${DNSPROP_ENV:-dev}"
 
-# Function: _dnsprop_is_build_mode
-# Description: Check if the script is build/compiled
-# Returns: None
 _dnsprop_is_build_mode() {
   [[ "${DNSPROP_IS_BUILD}" == "true" ]]
 }
 
-_dnsprop_script() {
-  echo "$(basename "$0")"
+_dnsprop_env() {
+  echo "${DNSPROP_ENV}"
 }
 
-# Function: _dnsprop_get_env
-# Description: Get the DNSProp environment
-# Returns: None
-_dnsprop_get_env() {
-  echo "${DNSPROP_ENV:-}"
+_dnsprop_debug_info() {
+  echo "DNSPROP_IS_BUILD: ${DNSPROP_IS_BUILD}"
+  echo "DNSPROP_ENV: ${DNSPROP_ENV}"
+  echo "DNSPROP_VERBOSE: ${DNSPROP_VERBOSE}"
+  echo "DNSPROP_DEBUG: ${DNSPROP_DEBUG}"
+  echo "DNSPROP_LOG_LEVEL: ${DNSPROP_LOG_LEVEL}"
+  echo "DNSPROP_PARAMS: ${DNSPROP_PARAMS[*]}"
+  echo "DNSPROP_ARGS: ${DNSPROP_ARGS[*]}"
 }
 
-get_dnsprop_env() {
-  echo "${DNSPROP_ENV:-}"
-  [[ "$BUILD_MODE" == "true" ]]
-}
-
-is_dnsprop_dev() {
-  [[ "$(get_dnsprop_env)" == "dev" ]]
-}
-
-is_dnsprop_test() {
-  [[ "$(get_dnsprop_env)" == "test" ]]
-}
-
-is_dnsprop_prod() {
-  [[ "$(get_dnsprop_env)" == "prod" ]]
-}
-
-if ! _dnsprop_is_build_mode; then
-  source "$(dirname "$0")/requirements.sh"
-  source "$(dirname "$0")/utils.sh"
-fi
-
+# ------------------------------------------------------------------------------
 main() {
+
+  if ! _dnsprop_is_build_mode; then
+    source "$(dirname "$0")/utils/utils.sh"
+  fi
+
+  _dnsprop_debug_info
+
   echo "Running main script logic..."
   # util_function
   dnsprop::log::info "This is an info message"
 }
 
+# ------------------------------------------------------------------------------
+
+# Load CLI
+if ! _dnsprop_is_build_mode; then
+  source "$(dirname "$0")/cli.sh"
+fi
+
 # Execute main function
+_dnsprop_parse_args "$@"
+
 main
