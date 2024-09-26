@@ -1,0 +1,5 @@
+# Enable all optional checks
+enable=all
+
+# Exclude specific checks if needed
+# disable=SC2034

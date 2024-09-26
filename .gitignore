@@ -1,0 +1,12 @@
+.DS_*
+.idea
+/Resources
+
+/build/*
+!/build/.gitkeep
+
+*.log
+/logs
+/src/re
+/src/dev.sh
+/DNSProp.sh

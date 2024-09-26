@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "jetmartin.bats",
+    "rogalmic.bash-debug",
+    "github.copilot",
+    "github.copilot-chat",
+    "timonwong.shellcheck",
+    "foxundermoon.shell-format"
+  ]
+}

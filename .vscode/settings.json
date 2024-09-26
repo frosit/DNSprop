@@ -1,0 +1,20 @@
+{
+    "makefile.configureOnOpen": false,
+    "files.associations": {
+        "*.sh": "shellscript"
+    },
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "terminal.integrated.shell.osx": "/usr/local/bin/bash",  // or "/bin/zsh" if you use Zsh
+    "terminal.integrated.env.osx": {
+        "PATH": "/usr/local/opt/grep/libexec/gnubin:/usr/local/opt/gawk/libexec/gnubin:${env:PATH}"
+      },
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "terminal.integrated.env.linux": {
+        "PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    },
+    "shellcheck.enable": true,
+    "shellcheck.run": "onSave",
+    "shellcheck.executablePath": "/usr/local/bin/shellcheck"
+}

@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.sh": "shellscript"
+		},
+		"terminal.integrated.env.linux": {
+			"PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+		},
+		"terminal.integrated.env.osx": {
+			"PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+		},
+		"makefile.configureOnOpen": false
+	}
+}
