@@ -100,7 +100,8 @@ dnsprop::log.log() {
   fi
 
   # write to terminal
-  if [[ "${__DNSPROP_VERBOSE}" -eq 1 ]]; then
+  # @TODO standardize verbose value (1 or true, 0 or false)
+  if [[ "${__DNSPROP_VERBOSE}" -eq 1 || "${__DNSPROP_VERBOSE}" = true ]]; then
     echo -e "${output_fmt}"
   fi
 
