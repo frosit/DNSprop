@@ -20,6 +20,7 @@ utils_load() {
     "consts.sh"
     "log.sh"
     "requirements.sh"
+    "record.sh"
   )
 
   for script_file in "${script_files[@]}"; do

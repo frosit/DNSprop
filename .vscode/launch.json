@@ -14,8 +14,32 @@
       "type": "bashdb",
       "request": "launch",
       "name": "BashDB DNSprop.sh",
-      "program": "${workspaceFolder}/src/DNSprop.sh",
-      "args": [],
+      "program": "${workspaceFolder}/src/main.sh",
+      "args": [
+        "dnsprop",
+        "--env=bla",
+        "--env2=blax,23,haha",
+        "--env3=blax,23,haha=6",
+        "-something",
+        "--shit 6",
+        "dnsprop"
+      ],
+      "env": {},
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "bashdb",
+      "request": "launch",
+      "name": "BashDB records DNSprop.sh",
+      "program": "${workspaceFolder}/src/main.sh",
+      "args": [
+        "frosit.nl::88.77.66.55",
+        "CNAME::hn.frosit.nl::frositnl.hypernode.io",
+        "google.nl",
+        "TXT::mail.frosit.nl::REGEXP:/+/",
+        "-d",
+        "--verbose"
+      ],
       "env": {},
       "cwd": "${workspaceFolder}"
     },

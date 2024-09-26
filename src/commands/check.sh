@@ -14,5 +14,5 @@ function dnsprop::commands.check() {
 
 }
 
-dnsprop_add_command "check" "dnsprop::commands:check"
-dnsprop::commands:add_command "check" "dnsprop::commands:check"
+# dnsprop_add_command "check" "dnsprop::commands:check"
+# dnsprop::commands:add_command "check" "dnsprop::commands:check"

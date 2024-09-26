@@ -8,26 +8,6 @@ DNSPROP_IS_BUILD="${DNSPROP_IS_BUILD:-false}"
 # DNSProp environment (dev, test, prod)
 DNSPROP_ENV="${DNSPROP_ENV:-dev}"
 
-__DNSPROP_COMMANDS=()
-CLI_COMMANDS=()
-
-dnsprop_add_command() {
-  local key=$1
-  local value=$2
-  CLI_COMMANDS["$key"]="$value"
-}
-
-dnsprop_get_command() {
-  local key=$1
-  echo "${CLI_COMMANDS[$key]}"
-}
-
-dnsprop_list_commands() {
-  for key in "${!cli_commands[@]}"; do
-    echo "Key: $key, Value: ${cli_commands[$key]}"
-  done
-}
-
 _dnsprop_is_build_mode() {
   [[ "${DNSPROP_IS_BUILD}" == "true" ]]
 }
@@ -51,21 +31,37 @@ main() {
 
   if ! _dnsprop_is_build_mode; then
     source "$(dirname "$0")/utils/utils.sh"
-    source "$(dirname "$0")/commands/commands.sh"
+    source "$(dirname "$0")/commands.sh"
+    # source "$(dirname "$0")/commands/commands.sh"
   fi
+
+  # @TODO load env file
 
   # if debug enabled
   if [[ "${DNSPROP_DEBUG:-false}" == true ]]; then
     _dnsprop_debug_info
   fi
 
-  if [[ " ${DNSPROP_PARAMS[*]} " == *" -info "* ]]; then
-    dnsprop::commands.info
+  # Start actions
+  if [[ " ${DNSPROP_PARAMS[*]} " == *" -monitor "* ]]; then
+    dnsprop::commands.monitor
   fi
 
   if [[ " ${DNSPROP_PARAMS[*]} " == *" -info "* ]]; then
     dnsprop::commands.info
   fi
+
+  if [[ " ${DNSPROP_PARAMS[*]} " == *" -check "* ]]; then
+    dnsprop::commands.check
+  fi
+
+  if [[ " ${DNSPROP_PARAMS[*]} " == *" -check "* ]]; then
+    dnsprop::commands.check "${DNSPROP_ARGS[@]}"
+  else
+    dnsprop::commands.check "${DNSPROP_ARGS[@]}"
+  fi
+
+  _dnsprop_usage # if no other actions is ran, show usage, @TODO unnecessary
 }
 
 # ------------------------------------------------------------------------------
@@ -78,4 +74,5 @@ fi
 # Execute main function
 _dnsprop_parse_args "$@"
 
+# main execution
 main
