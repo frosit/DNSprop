@@ -7,6 +7,7 @@ DNSPROP_IS_BUILD="${DNSPROP_IS_BUILD:-false}"
 
 # DNSProp environment (dev, test, prod)
 DNSPROP_ENV="${DNSPROP_ENV:-dev}"
+DNSPROB_LOG_DIR="./"
 
 _dnsprop_is_build_mode() {
   [[ "${DNSPROP_IS_BUILD}" == "true" ]]
@@ -43,8 +44,8 @@ main() {
   fi
 
   # Start actions
-  if [[ " ${DNSPROP_PARAMS[*]} " == *" -help "* ]]; then
-    _dnsprop_usage
+  if [[ " ${DNSPROP_PARAMS[*]} " == *" -expect "* ]]; then
+    dnsprop::commands.expect
     exit 0
   fi
 
@@ -58,16 +59,16 @@ main() {
     exit 0
   fi
 
-  if [[ " ${DNSPROP_PARAMS[*]} " == *" -check "* ]]; then
-    dnsprop::commands.check
+  if [[ " ${DNSPROP_PARAMS[*]} " == *" -update "* ]]; then
+    dnsprop::commands.update
     exit 0
   fi
 
-  if [[ " ${DNSPROP_PARAMS[*]} " == *" -check "* ]]; then
-    dnsprop::commands.check "${DNSPROP_ARGS[@]}"
-    exit 0
+  if [[ ${#DNSPROP_ARGS[@]} -eq 0 ]]; then
+    dnsprop::log::error "No domains to check, please provide at least one domain. See --help for more information."
+    exit 1
   else
-    dnsprop::commands.check "${DNSPROP_ARGS[@]}"
+    dnsprop::commands.check
     exit 0
   fi
 }

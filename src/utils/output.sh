@@ -91,7 +91,6 @@ dnsprop::output.table_display_colored() {
       printf "${__DNSPROP_COLORS_YELLOW}%s${__DNSPROP_COLORS_RESET}\n" "$row"
       is_header=false
     else
-      echo -e "$row" >>rows.txt
       printf "%s\n" "$row"
     fi
   done

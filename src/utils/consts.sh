@@ -13,7 +13,8 @@ __DNSPROP_RETURN_TRUE=0
 __DNSPROP_RETURN_FALSE=1
 
 # __DNSPROP_LOG_DIR="$HOME/.dnsprop/logs"
-__DNSPROP_LOG_DIR=${DNSPROP_LOG_DIR:-"/tmp/"} # @TODO different default dir
+# __DNSPROP_LOG_DIR=${DNSPROP_LOG_DIR:-"/tmp/"} # @TODO different default dir
+__DNSPROP_LOG_DIR=${DNSPROP_LOG_DIR:-"$HOME/"} # @TODO different default dir
 __DNSPROP_LOG_FORMAT="[{TIMESTAMP}] {LEVEL}: {MESSAGE}"
 __DNSPROP_LOG_LEVEL=${DNSPROP_LOG_LEVEL:-4}
 

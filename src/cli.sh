@@ -42,6 +42,7 @@ _dnsprop_usage() {
   echo "  -check (default)        Check DNS propagation for a domain"
   echo "  -info                   Show information about DNSProp (environment, server, settings)"
   echo "  -update                 Update DNSProp to the latest version"
+  echo "  -expect                 Debug the expect value for a DNS record"
   echo "Options:"
   echo "  -e, --env=<env>         Set the environment (dev, test, prod)"
   echo "  -v, --verbose           Enable verbose mode"
@@ -66,7 +67,7 @@ _dnsprop_usage() {
 _dnsprop_parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
-    -h | --help)
+    -h | --help | -help)
       _dnsprop_usage
       exit 0
       ;;

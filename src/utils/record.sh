@@ -195,7 +195,7 @@ dnsprop::record.compare_string() {
   if [[ "$op" == "eq" ]]; then
     if [[ "$actual" == "$expected" ]]; then
       dnsprop::log::debug "string match of ${actual} ${op} ${expected} = true"
-      echo "STRING match: true"
+      # echo "STRING match: true"
       return 0
     else
       dnsprop::log::debug "string match of ${actual} ${op} ${expected} = false"
@@ -211,6 +211,9 @@ dnsprop::record.compare_string() {
     fi
   fi
 }
+
+# __DNSPROP_RECORD_EXPECT_RE_STRING_EQ="^=\'(.*)\'"
+__DNSPROP_RECORD_EXPECT_RE_STRING_EQ="^([\'\!\=]+)([a-zA-Z0-9\.-]+)(?:\'|)"
 
 # Function: dnsprop::record.compare_expected_value
 # Description: Compares the expected value of a DNS record with the actual value.
@@ -240,17 +243,10 @@ dnsprop::record.compare_expected_value() {
 
   dnsprop::log::debug "Expected: ${expected}, Actual: ${actual}"
 
-  # determine type of compare by the string starting with:
-  # REGEXP:
-  # WILDCARD: if expected_value contains * or ?, then use wildcard compare
-  # LIKE: if expected_value contains %, then use SQL LIKE compare
-  # CIDR: if expected_value contains /, then use CIDR compare
-  # STRING: otherwise, use string compare
-
   local pattern
   local matching
 
-  if [[ "$expected" =~ REGEXP\'(.*)\' ]]; then
+  if [[ "$expected" =~ REGEXP(.*) ]]; then
     pattern="${BASH_REMATCH[1]}"
     dnsprop::log::debug "REGEXP pattern: ${pattern}, expected: ${expected}, actual: ${actual}"
     dnsprop::record.compare_regexp "$actual" "$pattern"
@@ -271,13 +267,16 @@ dnsprop::record.compare_expected_value() {
     string="${BASH_REMATCH[2]}"
     dnsprop::log::debug "STRING match != : string: ${string}, expected: ${expected}, actual: ${actual}"
     dnsprop::record.compare_string "$actual" "$string" "ne"
-  # elif [[ "$expected" =~ ^(.*)'='(.*) ]]; then
-  elif [[ "$expected" =~ ^=\'(.*)\' ]]; then
+  elif [[ "$expected" =~ ^(.*)'='(.*) ]]; then
+    # elif [[ "$expected" =~ ^=\'(.*)\' ]]; then
+    # elif [[ "$expected" =~ ${__DNSPROP_RECORD_EXPECT_RE_STRING_EQ} ]]; then
     string="${BASH_REMATCH[1]}"
     dnsprop::log::debug "STRING match '=' : string: ${string}, expected: ${expected}, actual: ${actual}"
     dnsprop::record.compare_string "$actual" "$string" "eq"
   else
     # Default to simple string comparison if no operator is specified
+    dnsprop::log::debug "STRING match default: expected: ${expected}, actual: ${actual}"
+    dnsprop::log::warning "Reached the end of the expect value comparison, defaulting to string comparison, there could be an issue."
     dnsprop::record.compare_string "$actual" "$expected" "eq"
   fi
 
@@ -289,6 +288,65 @@ dnsprop::record.compare_expected_value() {
   else
     dnsprop::log::debug "Expected value: ${expected} does not match actual value: ${actual}"
     return 1
+  fi
+
+}
+
+# Gets the expect type, easy for debugging
+dnsprop::record.compare_expect_type() {
+  local expected="$1" # The expect value: REGEXP'^[0-9\.]+$', or ='domain.com', or !='domain.com'
+
+  # Most match types return a pattern to match against
+  # - regexp: REGEXP'^[0-9\.]+$'
+  # - like: LIKE'some.%.com'
+  # - wildcard: WILDCARD'*.some.?.com'
+  # - cidr: CIDR'192.168.1.1/24'
+  # - string: ='domain.com' or !='domain.com'
+  local pattern
+
+  # The matching type: regexp, like, wildcard, cidr, stringeq, stringne
+  local matching_type
+
+  # The result code of the match
+  # 0: match
+  # 1: no match
+  # not really used here, but could be useful for debugging
+  local match_status
+
+  if [[ "$expected" =~ REGEXP\'(.*)\' ]]; then
+    pattern="${BASH_REMATCH[1]}"
+    matching_type="regexp"
+    # dnsprop::log::debug "REGEXP pattern: ${pattern}, expected: ${expected}, actual: ${actual}"
+    # dnsprop::record.compare_regexp "$actual" "$pattern"
+  elif [[ "$expected" =~ LIKE\'(.*)\' ]]; then
+    pattern="${BASH_REMATCH[1]}"
+    matching_type="like"
+    # dnsprop::log::debug "LIKE pattern: ${pattern}, expected: ${expected}, actual: ${actual}"
+    # dnsprop::record.compare_like "$actual" "$pattern"
+  elif [[ "$expected" =~ WILDCARD\'(.*)\' ]]; then
+    pattern="${BASH_REMATCH[1]}"
+    matching_type="wildcard"
+    # dnsprop::log::debug "WILDCARD pattern: ${pattern}, expected: ${expected}, actual: ${actual}"
+    # dnsprop::record.compare_wildcard "$actual" "$wildcard_pattern"
+  elif [[ "$expected" =~ CIDR\'(.*)\' ]]; then
+    pattern="${BASH_REMATCH[1]}"
+    matching_type="cidr"
+    # dnsprop::log::debug "CIDR pattern: ${pattern}, expected: ${expected}, actual: ${actual}"
+    # dnsprop::record.compare_cidr "$actual" "$cidr_pattern"
+  elif [[ "$expected" =~ ^(.*)!=\'(.*) ]]; then
+    # elif [[ "$expected" =~ ^!=\'(.*)\' ]]; then
+    string="${BASH_REMATCH[2]}"
+    matching_type="stringne"
+    # dnsprop::log::debug "STRING match != : string: ${string}, expected: ${expected}, actual: ${actual}"
+    # dnsprop::record.compare_string "$actual" "$string" "ne"
+  elif [[ "$expected" =~ ^(.*)'='(.*) ]]; then
+    string="${BASH_REMATCH[1]}"
+    matching_type="stringeq"
+    # dnsprop::log::debug "STRING match '=' : string: ${string}, expected: ${expected}, actual: ${actual}"
+    # dnsprop::record.compare_string "$actual" "$string" "eq"
+  else
+    echo -e "End of if set!!!!"
+    matching_type="error"
   fi
 
 }

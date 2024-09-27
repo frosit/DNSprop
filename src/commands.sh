@@ -18,6 +18,16 @@ dnsprop::commands.monitor() {
 dnsprop::commands.info() {
   dnsprop::output.title "DNSProp - info"
   dnsprop::output.writeln "DNSProp is a tool to check DNS propagation."
+
+  # Show all major env variables
+  dnsprop::output.key_value "Environment" "$DNSPROP_ENV"
+  dnsprop::output.key_value "Build Mode" "$DNSPROP_IS_BUILD"
+  dnsprop::output.key_value "Debug" "$DNSPROP_DEBUG"
+  dnsprop::output.key_value "Verbose" "$DNSPROP_VERBOSE"
+  dnsprop::output.key_value "Log Level" "$DNSPROP_LOG_LEVEL"
+  dnsprop::output.key_value "Log file" "$__DNSPROP_LOG_FILE"
+  dnsprop::output.key_value "Log dir" "$__DNSPROP_LOG_DIR"
+
   echo -e ""
 
   dnsprop::commands.dnsservers
@@ -43,6 +53,39 @@ dnsprop::commands.dnsservers() {
   done
 
   dnsprop::output.seperator "^" "*"
+}
+
+dnsprop::commands.expect() {
+  dnsprop::output.title "DNSProp - Expect debugger"
+  dnsprop::output.writeln "The expect debugger helps you to debug the patterm and matching for expected value of a DNS record."
+
+  local record="${DNSPROP_ARGS[0]}"
+  local record_type=$(dnsprop::record.get_part "$record" "record_type")
+  local record_domain=$(dnsprop::record.get_part "$record" "domain")
+  local record_expected_value=$(dnsprop::record.get_part "$record" "expected_value")
+
+  local expect_matching_type
+  local expect_matching_pattern
+
+  # regex="^(REGEXP|LIKE|WILDCARD|CIDR|!=|=)\'([^\']*)\'$"
+  regex="^(REGEXP|LIKE|WILDCARD|CIDR|!=|=)(?:\'|)([^\']*)(?:\'|)$"
+  # if [[ "$record_expected_value" =~ ^(REGEXP|LIKE|WILDCARD|CIDR|!=|=)\(\'([^\']*)\'\)$ ]]; then
+  if [[ "$expect_value" =~ $regex ]]; then
+    expect_matching_type="${BASH_REMATCH[1]}"
+    expect_matching_pattern="${BASH_REMATCH[2]}"
+  fi
+
+  # dnsprop::record.compare_expected_value $expected $actual
+  # dnsprop::record.compare_expect_type "$record_expected_value"
+
+  dnsprop::output.key_value "Record" "$record"
+  dnsprop::output.key_value "Record Type" "$record_type"
+  dnsprop::output.key_value "Record Domain" "$record_domain"
+  dnsprop::output.key_value "Record Expected Value" "$record_expected_value"
+
+  dnsprop::output.key_value "Record Expected match type" "$expect_matching_type"
+  dnsprop::output.key_value "Record Expected match pattern" "$expect_matching_pattern"
+
 }
 
 # Check DNS propagation for a domain
@@ -112,20 +155,15 @@ dnsprop::commands.check_record() {
 
       if [[ "$record_expected_value" != false ]]; then # Check if expected value matches
 
-        if [[ "$value" == "$record_expected_value" ]]; then
-          # status="OK:"
-          # status="V"
+        # echo -e "xxxx NG $record_expected_value -- $value"
+
+        # local compare_expected_value=$(dnsprop::record.compare_expected_value "$record_expected_value" "$value")
+
+        if dnsprop::record.compare_expected_value "$record_expected_value" "$value"; then
           status="Y"
-          # status="${__NSPROP_COLORS_GREEN}V${__NSPROP_COLORS_RESET}"
-          # status="\033[32mY\033[0m" # Green 'Y'
-          # value="${__NSPROP_COLORS_GREEN}OK:${value}${__NSPROP_COLORS_RESET}"
         else
-          # status="FAIL:"
           status="X"
-          # status="\033[31mX\033[0m" # Red 'X'
-          # value="${__NSPROP_COLORS_RED}FAIL:${value}${__NSPROP_COLORS_RESET}"
         fi
-        # value="${status}${value}"
       fi
 
       if [[ "$first_row" == true ]]; then
