@@ -19,6 +19,7 @@ utils_load() {
     "env.sh"
     "consts.sh"
     "log.sh"
+    "output.sh"
     "requirements.sh"
     "record.sh"
   )

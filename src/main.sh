@@ -43,25 +43,33 @@ main() {
   fi
 
   # Start actions
+  if [[ " ${DNSPROP_PARAMS[*]} " == *" -help "* ]]; then
+    _dnsprop_usage
+    exit 0
+  fi
+
   if [[ " ${DNSPROP_PARAMS[*]} " == *" -monitor "* ]]; then
     dnsprop::commands.monitor
+    exit 0
   fi
 
   if [[ " ${DNSPROP_PARAMS[*]} " == *" -info "* ]]; then
     dnsprop::commands.info
+    exit 0
   fi
 
   if [[ " ${DNSPROP_PARAMS[*]} " == *" -check "* ]]; then
     dnsprop::commands.check
+    exit 0
   fi
 
   if [[ " ${DNSPROP_PARAMS[*]} " == *" -check "* ]]; then
     dnsprop::commands.check "${DNSPROP_ARGS[@]}"
+    exit 0
   else
     dnsprop::commands.check "${DNSPROP_ARGS[@]}"
+    exit 0
   fi
-
-  _dnsprop_usage # if no other actions is ran, show usage, @TODO unnecessary
 }
 
 # ------------------------------------------------------------------------------
